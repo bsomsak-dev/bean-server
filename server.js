@@ -64,6 +64,20 @@ app.get('/makeOrder/:username/:beanType/:beanNum', function (req, res) {
     });
 });
 
+app.get('/getOrder', function (req, res) {
+    console.log("call /getOrder");
+    let queryString = "SELECT username, bean_type, bean_num, REPLACE(timestamp, 't', '') AS timestamp, order_id " +
+        " FROM orders " +
+        " WHERE complete_status = ? " +
+        " ORDER BY timestamp, username ASC " +
+        " LIMIT 1";
+    let filter = [false]
+    dbConn.query(queryString, filter, function (error, results) {
+        if (error) throw error;
+        return res.send(results[0]);
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
