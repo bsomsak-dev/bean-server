@@ -34,6 +34,20 @@ app.get('/monitor', function (req, res) {
     });
 });
 
+app.get('/updateStock/:beanType/:beanNum', function (req, res) {
+    let beanType = req.params.beanType;
+    let beanNum = req.params.beanNum;
+    console.log("call /updateStock = > beanType: " + beanType + ", beanNum: " + beanNum);
+    if (!beanType || !beanNum)
+        return res.status(400).send({error: true, message: 'Please provide [beanType, beanNum]'});
+    let queryString = 'UPDATE beans SET bean_num = ? WHERE bean_type = ?';
+    let filter = [beanNum, beanType];
+    dbConn.query(queryString, filter, function (error, results) {
+        if (error) throw error;
+        return res.send({data: results});
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
