@@ -48,6 +48,22 @@ app.get('/updateStock/:beanType/:beanNum', function (req, res) {
     });
 });
 
+app.get('/makeOrder/:username/:beanType/:beanNum', function (req, res) {
+    let username = req.params.username;
+    let beanType = req.params.beanType;
+    let beanNum = req.params.beanNum;
+    console.log("call /makeOrder = > username: " + username + ", beanType: " + beanType + ", beanNum: " + beanNum);
+    if (!username || !beanType || !beanNum)
+        return res.status(400).send({error: true, message: 'Please provide [username, beanType, beanNum]'});
+    let queryString = "INSERT INTO orders (username, bean_type, bean_num, complete_status)" +
+        " VALUES (?, ?, ?, ?)";
+    let filter = [username, beanType, beanNum, false];
+    dbConn.query(queryString, filter, function (error, results) {
+        if (error) throw error;
+        return res.send("Number of records inserted: " + results.affectedRows);
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
