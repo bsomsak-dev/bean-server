@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql");
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
@@ -24,7 +25,15 @@ app.get("/", (req, res) => {
     res.json({message: "Welcome to beans RestFul API server."});
 });
 
-const PORT = process.env.PORT || 5000;
+app.get('/monitor', function (req, res) {
+    console.log("call /monitor");
+    dbConn.query('SELECT * FROM beans', function (error, results) {
+        if (error)
+            throw error;
+        return res.send({data: results});
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
