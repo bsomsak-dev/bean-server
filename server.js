@@ -84,23 +84,10 @@ app.get('/completeOrder/:username/:orderId', function (req, res) {
     console.log("call /successOrder = > username: " + username + ", orderId: " + orderId);
     if (!username || !orderId)
         return res.status(400).send({error: true, message: 'Please provide [username, orderId]'});
-    let queryString = 'WITH processing_order AS (' +
-        '   SELECT bean_type, bean_num ' +
-        '   FROM beandb.orders ' +
-        '   WHERE username = ? ' +
-        '   AND order_id = ? )' +
-        ' UPDATE beans ' +
-        ' INNER JOIN processing_order ON beans.bean_type  = processing_order.bean_type ' +
-        ' SET beans.bean_num = beans.bean_num - processing_order.bean_num ' +
-        ' WHERE beans.bean_type = processing_order.bean_type ';
-    let filter = [username, orderId];
-    dbConn.query(queryString, filter, function (error) {
-        if (error) throw error;
-    });
-    let queryString2 = 'UPDATE orders SET complete_status = ? ' +
+    let queryString = 'UPDATE orders SET complete_status = ? ' +
         ' WHERE username = ? AND order_id = ?';
-    let filter2 = [true, username, orderId];
-    dbConn.query(queryString2, filter2, function (error, results) {
+    let filter = [true, username, orderId];
+    dbConn.query(queryString, filter, function (error, results) {
         if (error) throw error;
         return res.send({data: results});
     });
